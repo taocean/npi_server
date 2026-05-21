@@ -1,0 +1,92 @@
+Magic 271485
+Revision Verdi_W-2024.09-SP2-2
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 25 1920 404 304 112
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+; ----------------------------------------------------------------------------------
+; Replace <FSDB_PATH> with the absolute FSDB path. The `-d /` declares signal
+; paths in this file use `/` as the delimiter — paths below MUST use `/`, not `.`
+; ----------------------------------------------------------------------------------
+openDirFile -d / "" "<FSDB_PATH>"
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range — replace with sim time of interest (femtoseconds)
+zoom 0.000000 1000000000.000000
+cursor 0.000000
+marker 0.000000
+
+; visible top row signal index
+top 0
+; marker line index
+markerPos 0
+
+; toolbar current search type
+curSTATUS ByChange
+
+
+; ============================================================================
+; Group blocks — one `addGroup "name"` then one or more `addSignal` lines.
+; Convert any `.`-separated NPI path to `/`-separated here.
+;   NPI:    tb.substrate.bridge.rdl_mid0.CHIP_MID.foo.bar.sig
+;   .rc:    /tb/substrate/bridge/rdl_mid0/CHIP_MID/foo/bar/sig
+;
+; First addSignal in a group uses the FULL path (with leading /).
+; Subsequent signals in the SAME parent scope can use `-holdScope <leaf_only>`
+; to inherit the previous full path's parent — much shorter and more readable.
+;
+; Common addSignal flags:
+;   -h <N>             row height in pixels (15 is the default look)
+;   -holdScope         use the previous full path's scope; arg is just the leaf name
+;   -c ID_<COLOR>      e.g. ID_CYAN3, ID_YELLOW3, ID_RED3
+;   -ls solid|dash     line style
+;   -lw <N>            line width
+;   -not_apply_wf_color
+;
+; Vector signals: include the bit range with brackets, e.g.
+;   addSignal -h 15 -holdScope my_bus[31:0]
+; ASCII-only — no Unicode arrows, no Chinese in group names or comments.
+; ============================================================================
+
+addGroup "G1_input_ports"
+activeDirFile "" "<FSDB_PATH>"
+addSignal -h 15 /tb/substrate/bridge/rdl_mid0/CHIP_MID/foo/bar/sig_a
+addSignal -h 15 -holdScope sig_b
+addSignal -h 15 -holdScope sig_c[7:0]
+
+addGroup "G2_intermediates"
+addSignal -h 15 /tb/substrate/bridge/rdl_mid0/CHIP_MID/foo/baz/intermediate_x
+addSignal -h 15 -holdScope intermediate_y
+
+addGroup "G3_output"
+addSignal -h 15 /tb/substrate/bridge/rdl_mid0/CHIP_MID/foo/output_signal
+
+
+; ============================================================================
+; Optional: scope hierarchy hint (helps Verdi's "Get Signal" form).
+; Safe to omit — Verdi works without it. Include the parent scopes of every
+; addSignal path above, one per line, for nicer GUI navigation.
+; ============================================================================
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/tb"
+"/tb/substrate"
+"/tb/substrate/bridge"
+"/tb/substrate/bridge/rdl_mid0"
+"/tb/substrate/bridge/rdl_mid0/CHIP_MID"
+
+SCOPE_LIST_BEGIN
+"/tb"
+"/tb/substrate"
+"/tb/substrate/bridge"
+"/tb/substrate/bridge/rdl_mid0"
+"/tb/substrate/bridge/rdl_mid0/CHIP_MID"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
