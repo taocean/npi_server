@@ -407,7 +407,7 @@ python3 debug_from_vcs_error.py \
 **Required env vars** (typically set in your shell rc after sourcing):
 ```bash
 ANTHROPIC_API_KEY=dummy
-ANTHROPIC_BASE_URL=https://llm-api.amd.com/Anthropic
+ANTHROPIC_BASE_URL=https://<your-llm-proxy>.<your-org>.com/Anthropic
 ANTHROPIC_CUSTOM_HEADERS=Ocp-Apim-Subscription-Key: $LLM_GATEWAY_KEY
 ```
 
